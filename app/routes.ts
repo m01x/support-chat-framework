@@ -5,6 +5,8 @@ export default [
     index("routes/home.tsx"),
 
 //Auth
+
+//Con el prefix, se puede acceder a las rutas de auth sin tener que escribir el /auth.
 ...prefix('/auth', [
 
     layout('layouts/auth-layout.tsx', [
