@@ -1,18 +1,38 @@
-import { useNavigate } from "react-router";
-import { Button } from "~/components/ui/button"
+import type { Route } from "./+types/testing-page";
 
-const TestingPage = () => {
-
-  const navigate = useNavigate();
-
-  return (
-    <>
-      <p>
-        testing page
-        </p>
-      <Button className="mt-2" onClick={() => navigate('/auth/login')}>Go to login</Button>
-    </>
-  )
+export async function loader() {
+  console.log("loader - server");
+  return { message: "Hello, world desde el loader - server" };
 }
 
-export default TestingPage
+
+
+export async function clientLoader({ serverLoader }) {
+  console.log("loader - client");
+
+  // call the server loader
+  // const serverData = await serverLoader();
+  // And/or fetch data on the client
+  // const data = getDataFromClient();
+  // Return the data to expose through useLoaderData()
+  return {message: "Hello, world desde el clientLoader - client"};
+}
+
+
+
+export default function MyRouteComponent({
+  loaderData,
+  actionData,
+  params,
+  matches,
+}: Route.ComponentProps) {
+  return (
+    <div>
+      <h1>Welcome to My Route with Props!</h1>
+      <p>Loader Data: {JSON.stringify(loaderData)}</p>
+      <p>Action Data: {JSON.stringify(actionData)}</p>
+      <p>Route Parameters: {JSON.stringify(params)}</p>
+      <p>Matched Routes: {JSON.stringify(matches)}</p>
+    </div>
+  );
+}

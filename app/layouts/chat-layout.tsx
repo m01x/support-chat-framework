@@ -1,11 +1,22 @@
 
-import { Outlet } from "react-router"
+import { Outlet, useLoaderData } from "react-router"
 import { LogOut, X } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { ContactList } from "~/chat/components/ContactList"
 import { ContactInformationCard } from "~/chat/components/contact-information-card/ContactInformationCard"
+import { getClients } from "~/fake/fake-data";
+import type { Route } from "./+types/chat-layout"
 
-export default function ChatLayout() {
+export async function loader() {
+  const clients = await getClients();
+  console.log(clients);
+  return { clients };
+}
+
+export default function ChatLayout({ loaderData}: Route.ComponentProps) {
+  
+  const { clients } = loaderData;
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -16,7 +27,7 @@ export default function ChatLayout() {
             <span className="font-semibold">NexTalk</span>
           </div>
         </div>
-        <ContactList />
+        <ContactList clients={clients} />
         <div className="p-4 border-t">
           <Button variant="default" className="w-full text-center">
             <LogOut className="w-4 h-4 mr-2" />
