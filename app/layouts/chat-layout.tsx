@@ -31,7 +31,7 @@ export default function ChatLayout({ loaderData}: Route.ComponentProps) {
         <div className="p-4 border-t">
           <Button variant="default" className="w-full text-center">
             <LogOut className="w-4 h-4 mr-2" />
-            LogOut
+            LogOuts
           </Button>
         </div>
       </div>
