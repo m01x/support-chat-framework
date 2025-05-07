@@ -1,9 +1,27 @@
-import { Link, Outlet, useNavigate } from "react-router";
-import placeholder from "~/assets/images/placeholder.svg";
-import { Label } from "~/components/ui/label";
+import { Link, redirect, useNavigate } from "react-router";
+
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
+
+import placeholder from "~/assets/images/placeholder.svg";
+import type { Route } from "./+types/login-page";
+import { getSession } from "~/sessions.server";
+
+
+
+export async function loader({ request }:Route.LoaderArgs){
+
+  const session = await getSession( request.headers.get('Cookie'));
+
+  if ( session.get('userId')){
+    return redirect('/chat');
+  }
+
+
+}
+
 
 const LoginPage = () => {
 
