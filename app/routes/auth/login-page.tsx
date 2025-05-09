@@ -8,6 +8,7 @@ import { Input } from "~/components/ui/input";
 import placeholder from "~/assets/images/placeholder.svg";
 import type { Route } from "./+types/login-page";
 import { commitSession, getSession } from "~/sessions.server";
+import { useEffect } from "react";
 
 
 
@@ -38,22 +39,29 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 }
 
-export async function action({
-  request,
-}: Route.ActionArgs) {
-  const session = await getSession(
-    request.headers.get("Cookie")
-  );
+export async function action({ request,}: Route.ActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
   const form = await request.formData();
   const email = form.get("email");
   const password = form.get("password");
   
   if( email === "algo@google.com"){
     session.flash('error', 'Invalid email');
-    return redirect('/auth/login?error=Invalid Email',{
+    // return redirect('/auth/login?error=Invalid Email',{
+    //   headers:{
+    //     'Set-Cookie': await commitSession(session),
+    //   }
+    // })
+    return data({
+      error:'invalid Email - Error custom'
+    },
+    {
       headers:{
         'Set-Cookie': await commitSession(session),
-      }
+      },
+      status:400,
+      statusText:'Bad Request'
     })
   }
 
@@ -76,13 +84,19 @@ export async function action({
 
 
 
-const LoginPage = () => {
-
+const LoginPage = ({ actionData }: Route.ComponentProps) => {
+console.log(actionData)
   const navigate = useNavigate();
 
   const onAppleLogin = () => {
     navigate('/auth/testing');
   }
+
+  useEffect(()=>{
+    if (actionData?.error){
+      alert(actionData.error);
+    }
+  },[actionData]);
 
   return (
 

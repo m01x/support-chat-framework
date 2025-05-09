@@ -1,13 +1,23 @@
 
-import { Outlet, useLoaderData } from "react-router"
+import { Form, Outlet, redirect, useNavigate } from "react-router"
 import { LogOut, X } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { ContactList } from "~/chat/components/ContactList"
 import { ContactInformationCard } from "~/chat/components/contact-information-card/ContactInformationCard"
 import { getClients } from "~/fake/fake-data";
 import type { Route } from "./+types/chat-layout"
+import { getSession } from "~/sessions.server"
 
-export async function loader() {
+export async function loader({ request }:Route.LoaderArgs) {
+
+  const session = await getSession(request.headers.get('Cookie'));
+
+  if (!session.has('userId')) {
+    return redirect('/auth/login');
+  }
+
+  //* Si pasamos las validaciones anteriores, proseguimos.
+
   const clients = await getClients();
   console.log(clients);
   return { clients };
@@ -16,6 +26,11 @@ export async function loader() {
 export default function ChatLayout({ loaderData}: Route.ComponentProps) {
   
   const { clients } = loaderData;
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    navigate('/auth/logout');
+  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -28,12 +43,12 @@ export default function ChatLayout({ loaderData}: Route.ComponentProps) {
           </div>
         </div>
         <ContactList clients={clients} />
-        <div className="p-4 border-t">
-          <Button variant="default" className="w-full text-center">
+        <Form action="/auth/logout" method="post" className="p-4 border-t">
+          <Button variant="default" className="w-full text-center" onClick={onLogout}>
             <LogOut className="w-4 h-4 mr-2" />
-            LogOuts
+            LogOut
           </Button>
-        </div>
+        </Form>
       </div>
 
       {/* Main Content */}
