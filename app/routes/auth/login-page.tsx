@@ -9,6 +9,7 @@ import placeholder from "~/assets/images/placeholder.svg";
 import type { Route } from "./+types/login-page";
 import { commitSession, getSession } from "~/sessions.server";
 import { useEffect } from "react";
+import { loginUser } from "~/fake/fake-data";
 
 
 
@@ -42,6 +43,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request,}: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
 
+  console.log('REQUEST', request);
+  
+
   const form = await request.formData();
   const email = form.get("email");
   const password = form.get("password");
@@ -64,11 +68,12 @@ export async function action({ request,}: Route.ActionArgs) {
       statusText:'Bad Request'
     })
   }
-
+const user = await loginUser();
   
-   session.set('userId', 'U1-12345');
-   session.set('token', 'token-1234567890');
-
+   session.set('userId', user.id);
+   session.set('token', user.token);
+   session.set('name', user.name);
+   
    return redirect('/chat', {
     headers:{
       'Set-Cookie': await commitSession(session),
@@ -85,7 +90,7 @@ export async function action({ request,}: Route.ActionArgs) {
 
 
 const LoginPage = ({ actionData }: Route.ComponentProps) => {
-console.log(actionData)
+
   const navigate = useNavigate();
 
   const onAppleLogin = () => {

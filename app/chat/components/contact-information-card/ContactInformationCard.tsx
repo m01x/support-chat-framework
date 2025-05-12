@@ -1,11 +1,30 @@
 
+import { useLoaderData, useNavigation, useParams } from "react-router";
 import { ContactInformation } from "./ContactInformation"
 import { ContactInformationSkeleton } from "./ContactInformationSkeleton"
 import { NoContactSelected } from "./NoContactSelected"
+import type { Client } from "~/chat/interfaces/chat.interface";
 
 export const ContactInformationCard = () => {
 
-  return <NoContactSelected/>
-  return <ContactInformationSkeleton/>
-  return <ContactInformation/>
+  const {id} = useParams();
+  //useLoaderData recupera info desde el loader padre, si no se ha ejecutado un loader, esto no dará nada.
+  const { clients = [] } = useLoaderData();
+  const { state } = useNavigation();
+
+  const isPending = state === 'loading';
+
+  if (isPending) {
+    return <ContactInformationSkeleton />
+  }
+
+  if (!id) {
+    return <NoContactSelected />
+  }
+
+  const client = clients.find((client: Client) => client.id === id);
+
+  if (!client) return <NoContactSelected/>
+
+  return <ContactInformation client={client}/>
 }
