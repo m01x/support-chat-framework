@@ -10,7 +10,6 @@ interface Props {
 export const ContactList = ({ clients }: Props) => {
 
   const { id } = useParams();
-  console.log(id)
   return (
     <ScrollArea className="h-[calc(100vh-120px)]">
           <div className="space-y-4 p-4">

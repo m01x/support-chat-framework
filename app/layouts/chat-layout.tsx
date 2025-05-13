@@ -4,15 +4,17 @@ import { LogOut, X } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { ContactList } from "~/chat/components/ContactList"
 import { ContactInformationCard } from "~/chat/components/contact-information-card/ContactInformationCard"
-import { getClients } from "~/fake/fake-data";
+import { getClient, getClients } from "~/fake/fake-data";
 import type { Route } from "./+types/chat-layout"
 import { getSession } from "~/sessions.server"
 
-export async function loader({ request }:Route.LoaderArgs) {
+export async function loader({ request, params }:Route.LoaderArgs) {
 
   const session = await getSession(request.headers.get('Cookie'));
 
   const userName = session.get('name')
+  const {id} = params;
+
 
   if (!session.has('userId')) {
     return redirect('/auth/login');
@@ -21,13 +23,20 @@ export async function loader({ request }:Route.LoaderArgs) {
   //* Si pasamos las validaciones anteriores, proseguimos.
 
   const clients = await getClients();
-  console.log(clients);
+
+  if (id){
+    const client = await getClient(id);
+    return { client , userName, clients}
+  }
+
+
   return { clients , userName};
+
 }
 
 export default function ChatLayout({ loaderData }: Route.ComponentProps) {
   
-  const { clients, userName } = loaderData;
+  const { clients, userName, client } = loaderData;
   const navigate = useNavigate();
 
   const onLogout = () => {
@@ -76,7 +85,7 @@ export default function ChatLayout({ loaderData }: Route.ComponentProps) {
           <div className="h-14 border-b px-4 flex items-center">
             <h2 className="font-medium">Contact details</h2>
           </div>
-          <ContactInformationCard />
+          <ContactInformationCard client={client}/>
         </div>
       </div>
     </div>

@@ -5,7 +5,12 @@ import { ContactInformationSkeleton } from "./ContactInformationSkeleton"
 import { NoContactSelected } from "./NoContactSelected"
 import type { Client } from "~/chat/interfaces/chat.interface";
 
-export const ContactInformationCard = () => {
+interface Props {
+  client?: Client;
+}
+
+
+export const ContactInformationCard = ({ client }: Props) => {
 
   const {id} = useParams();
   //useLoaderData recupera info desde el loader padre, si no se ha ejecutado un loader, esto no dará nada.
@@ -14,6 +19,8 @@ export const ContactInformationCard = () => {
 
   const isPending = state === 'loading';
 
+  if ( client ) return <ContactInformation client={client}/>
+
   if (isPending) {
     return <ContactInformationSkeleton />
   }
@@ -21,8 +28,8 @@ export const ContactInformationCard = () => {
   if (!id) {
     return <NoContactSelected />
   }
-
-  const client = clients.find((client: Client) => client.id === id);
+  //Depreciado.
+  // const client = clients.find((client: Client) => client.id === id);
 
   if (!client) return <NoContactSelected/>
 
